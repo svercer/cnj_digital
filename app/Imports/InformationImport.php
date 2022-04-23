@@ -27,11 +27,4 @@ class InformationImport implements ToModel, WithHeadingRow
             'borough_flag' => $row['borough_flag'],
         ]);
     }
-//    public function collection(Collection $rows): ?\Illuminate\Database\Eloquent\Model
-//    {
-//        dd($rows);
-//        foreach($rows as $row){
-//
-//        }
-//    }
 }
