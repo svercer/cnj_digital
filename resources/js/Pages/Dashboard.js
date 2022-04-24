@@ -9,14 +9,24 @@ export default function Dashboard(props) {
     const [numberOfCrimes, setNumberOfCrimes] = useState(null)
     const [averagePricePerYearInLondon, setAveragePricePerYearInLondon] = useState([])
     const [message, setMessage] = useState('')
+    const [errors, setErrors] = useState('')
+    const [loader, setLoader] = useState(false)
     const [data, setData] = useState({
         file: '',
         save_to_db: ''
     })
 
-    console.log('message', message)
+    const resetDisplayedData = () => {
+        setAveragePricePerYearInLondon([])
+        setAveragePrice(null)
+        setNumberOfCrimes(null)
+        setTotalHousesSold(null)
+        setLoader(false)
+    }
+
     const submit = (e) => {
         e.preventDefault()
+        setLoader(true)
         setMessage('')
         let dataToSend = new FormData
         dataToSend.append('save_to_db', data.save_to_db)
@@ -27,11 +37,10 @@ export default function Dashboard(props) {
             }
         })
             .then(response => {
-                console.log('response', response)
-                setAveragePricePerYearInLondon([])
-                setAveragePrice(null)
-                setNumberOfCrimes(null)
-                setTotalHousesSold(null)
+                resetDisplayedData()
+                setData({
+                    save_to_db: ''
+                })
                 let data = response.data.data
                 if (data.countOfAllHousesSold != null){
                     setTotalHousesSold(data.countOfAllHousesSold)
@@ -49,12 +58,10 @@ export default function Dashboard(props) {
                     setMessage(response.data.message)
                 }
             })
-            .catch(error => {
-                if (error.length > 0){
-                    setAveragePricePerYearInLondon([])
-                    setAveragePrice(null)
-                    setNumberOfCrimes(null)
-                    setTotalHousesSold(null)
+            .catch(errors => {
+                if (errors.length > 0){
+                    resetDisplayedData()
+                    setErrors(errors)
                 }
             })
     }
@@ -88,7 +95,6 @@ export default function Dashboard(props) {
                                name="file"
                                id='file'
                         />
-                        {/*{errors.file && <div className='text-red-600'>{errors.file}</div>}*/}
                         <br/>
                         <div className=''>
                             <input className='mr-2'
@@ -101,12 +107,22 @@ export default function Dashboard(props) {
 
                             />
                             <label className='' htmlFor="save_to_db">Save to database</label>
-                            {/*{errors.save_to_db && <div className='text-red-600'>errors.save_to_db</div>}*/}
-
                         </div>
                         <br/>
                         <button type='button' onClick={submit} className='bg-blue-300 py-2 px-4 rounded'>Submit</button>
+                        {
+                            loader && <div className='text-indigo-600'>Processing...</div>
+                        }
                     </form>
+                    {
+                        errors && <div className='text-red-600'>
+                            {
+
+                               errors.message
+
+                            }
+                        </div>
+                    }
                 </div>
                 {
                     message && <div className='bg-green-500 text-white py-2 px-4 my-3'>{message}</div>

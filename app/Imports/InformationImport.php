@@ -6,9 +6,11 @@ use App\Models\Information;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class InformationImport implements ToModel, WithHeadingRow
+class InformationImport implements ToModel, WithHeadingRow, WithBatchInserts, WithValidation
 {
     /**
     * @param array $row
@@ -26,5 +28,23 @@ class InformationImport implements ToModel, WithHeadingRow
             'no_of_crimes' => $row['no_of_crimes'],
             'borough_flag' => $row['borough_flag'],
         ]);
+    }
+
+    public function batchSize(): int
+    {
+        return 300;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'date' => 'required|date',
+            'area' => 'required|string',
+            'average_price' => 'required|integer',
+            'code' => 'required|string',
+            'houses_sold' => 'nullable|integer',
+            'no_of_crimes' => 'nullable|integer',
+            'borough_flag' => 'required|integer',
+        ];
     }
 }

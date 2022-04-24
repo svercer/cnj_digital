@@ -21,6 +21,7 @@ class UploadController extends Controller
     public function upload(Request $request): \Illuminate\Http\JsonResponse
     {
         DB::table('information')->truncate();
+        //        This db truncate is for testing purposes do not full in the database
         $validator = Validator::make($request->all(), [
            'file' => 'required|file|mimes:csv,txt'
         ]);
@@ -34,7 +35,6 @@ class UploadController extends Controller
         $data = Information::calculate($file);
 
         if ($request->save_to_db) {
-            ini_set('max_execution_time', 300);
             try {
                 Excel::import(new InformationImport, $file);
             } catch (Throwable $e){

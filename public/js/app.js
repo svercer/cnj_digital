@@ -5591,18 +5591,35 @@ function Dashboard(props) {
       message = _useState10[0],
       setMessage = _useState10[1];
 
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState12 = _slicedToArray(_useState11, 2),
+      errors = _useState12[0],
+      setErrors = _useState12[1];
+
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+      _useState14 = _slicedToArray(_useState13, 2),
+      loader = _useState14[0],
+      setLoader = _useState14[1];
+
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
     file: '',
     save_to_db: ''
   }),
-      _useState12 = _slicedToArray(_useState11, 2),
-      data = _useState12[0],
-      setData = _useState12[1];
+      _useState16 = _slicedToArray(_useState15, 2),
+      data = _useState16[0],
+      setData = _useState16[1];
 
-  console.log('message', message);
+  var resetDisplayedData = function resetDisplayedData() {
+    setAveragePricePerYearInLondon([]);
+    setAveragePrice(null);
+    setNumberOfCrimes(null);
+    setTotalHousesSold(null);
+    setLoader(false);
+  };
 
   var submit = function submit(e) {
     e.preventDefault();
+    setLoader(true);
     setMessage('');
     var dataToSend = new (form_data__WEBPACK_IMPORTED_MODULE_4___default())();
     dataToSend.append('save_to_db', data.save_to_db);
@@ -5612,11 +5629,10 @@ function Dashboard(props) {
         'Content-type': 'multipart/form-data'
       }
     }).then(function (response) {
-      console.log('response', response);
-      setAveragePricePerYearInLondon([]);
-      setAveragePrice(null);
-      setNumberOfCrimes(null);
-      setTotalHousesSold(null);
+      resetDisplayedData();
+      setData({
+        save_to_db: ''
+      });
       var data = response.data.data;
 
       if (data.countOfAllHousesSold != null) {
@@ -5638,12 +5654,10 @@ function Dashboard(props) {
       if (response.data.message) {
         setMessage(response.data.message);
       }
-    })["catch"](function (error) {
-      if (error.length > 0) {
-        setAveragePricePerYearInLondon([]);
-        setAveragePrice(null);
-        setNumberOfCrimes(null);
-        setTotalHousesSold(null);
+    })["catch"](function (errors) {
+      if (errors.length > 0) {
+        resetDisplayedData();
+        setErrors(errors);
       }
     });
   };
@@ -5666,9 +5680,9 @@ function Dashboard(props) {
       title: "Dashboard"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
       className: "flex flex-col justify-center items-center my-10",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
         className: "shadow-lg p-6",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("form", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("form", {
           encType: "multipart/form-data",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
             onChange: function onChange(e) {
@@ -5700,8 +5714,14 @@ function Dashboard(props) {
             onClick: submit,
             className: "bg-blue-300 py-2 px-4 rounded",
             children: "Submit"
+          }), loader && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+            className: "text-indigo-600",
+            children: "Processing..."
           })]
-        })
+        }), errors && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+          className: "text-red-600",
+          children: errors.message
+        })]
       }), message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
         className: "bg-green-500 text-white py-2 px-4 my-3",
         children: message
